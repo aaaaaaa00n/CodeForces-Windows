@@ -1,15 +1,19 @@
-const { app, BrowserWindow, shell, session } = require('electron');
+const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 
-// 1. Disable the "AutomationControlled" feature. 
-// This hides the `navigator.webdriver` property, which Cloudflare checks to detect bots.
+// 1. Cloudflare Bypass Switches
+// These hide the fact that the browser is automated.
 app.commandLine.appendSwitch('disable-blink-features', 'AutomationControlled');
 app.commandLine.appendSwitch('disable-site-isolation-trials');
+app.commandLine.appendSwitch('rotate-host-per-load');
 
 let mainWindow;
 
 function createWindow() {
-  // Create the browser window.
+  // 2. Chrome 124 User Agent (Windows)
+  // Define this BEFORE creating the window so it applies immediately.
+  const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -21,14 +25,12 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       spellcheck: true,
-      sandbox: true, // improved security and often helps with captchas
-      webSecurity: true
+      sandbox: true,
+      webSecurity: true,
     }
   });
 
-  // 2. Set a realistic User Agent.
-  // This matches a standard Windows Chrome browser.
-  const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
+  // Apply the User Agent to the internal browser instance
   mainWindow.webContents.userAgent = userAgent;
 
   // Load the official Codeforces website
@@ -53,12 +55,6 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-  // Ensure the session also uses the correct User Agent globally
-  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    details.requestHeaders['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
-    callback({ cancel: false, requestHeaders: details.requestHeaders });
-  });
-
   createWindow();
 
   app.on('activate', function () {
