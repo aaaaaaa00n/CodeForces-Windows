@@ -12,6 +12,11 @@
   "build": {
     "appId": "com.codeforces.desktop",
     "productName": "Codeforces",
+    "files": [
+      "main.js",
+      "package.json",
+      "icon.ico"
+    ],
     "directories": {
       "output": "dist"
     },
