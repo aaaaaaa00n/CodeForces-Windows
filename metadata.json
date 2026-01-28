@@ -1,0 +1,5 @@
+{
+  "name": "Codeforces Companion",
+  "description": "A modern, responsive React client for Codeforces. Features include contest browsing, problem searching, user statistics visualization, and AI-powered study plan generation.",
+  "requestFramePermissions": []
+}
